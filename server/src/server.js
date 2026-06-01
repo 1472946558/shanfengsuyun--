@@ -25,6 +25,7 @@ const WECHAT_PAY_PRIVATE_KEY_PATH = process.env.WECHAT_PAY_PRIVATE_KEY_PATH || "
 const WECHAT_PAY_MCH_SERIAL_NO = process.env.WECHAT_PAY_MCH_SERIAL_NO || "";
 const WECHAT_PAY_API_V3_KEY = process.env.WECHAT_PAY_API_V3_KEY || "";
 const WECHAT_PAY_PLATFORM_CERT_PATH = process.env.WECHAT_PAY_PLATFORM_CERT_PATH || "";
+const WECHAT_PAY_REFUND_NOTIFY_URL = process.env.WECHAT_PAY_REFUND_NOTIFY_URL || "";
 const WECHAT_PAY_SKIP_NOTIFY_VERIFY = process.env.WECHAT_PAY_SKIP_NOTIFY_VERIFY === "true";
 const WECHAT_PAY_BASE_URL = process.env.WECHAT_PAY_BASE_URL || "https://api.mch.weixin.qq.com";
 
@@ -71,6 +72,10 @@ function createOutTradeNo() {
   return `SFHPAY${Date.now()}${crypto.randomBytes(2).toString("hex").toUpperCase()}`;
 }
 
+function createOutRefundNo() {
+  return `SFHREF${Date.now()}${crypto.randomBytes(2).toString("hex").toUpperCase()}`;
+}
+
 function createToken(payload) {
   const principal = payload.openid || payload.anonymous_openid || payload.userId || "guest";
   const raw = `${principal}:${Date.now()}:${crypto.randomBytes(12).toString("hex")}`;
@@ -99,6 +104,10 @@ function withPaymentDefaults(order = {}) {
     paidAt: "",
     paymentAttemptedAt: "",
     refundStatus: "none",
+    outRefundNo: "",
+    refundId: "",
+    refundAmountFen: 0,
+    refundedAt: "",
     notifyPayloadDigest: ""
   }, order);
 
@@ -444,6 +453,23 @@ async function queryWechatPaymentByOutTradeNo(outTradeNo) {
   return callWechatApi("GET", `/v3/pay/transactions/out-trade-no/${encodeURIComponent(outTradeNo)}?mchid=${encodeURIComponent(WECHAT_PAY_MCH_ID)}`);
 }
 
+async function createWechatRefund(order, body) {
+  const refundAmountFen = Number(body.refundAmountFen || order.paymentAmountFen || Math.round(Number(order.price || 0) * 100));
+  const outRefundNo = body.outRefundNo || order.outRefundNo || createOutRefundNo();
+  const payload = {
+    out_trade_no: order.outTradeNo,
+    out_refund_no: outRefundNo,
+    reason: body.reason || "用户申请退款",
+    notify_url: WECHAT_PAY_REFUND_NOTIFY_URL || WECHAT_PAY_NOTIFY_URL,
+    amount: {
+      refund: refundAmountFen,
+      total: order.paymentAmountFen || Math.round(Number(order.price || 0) * 100),
+      currency: "CNY"
+    }
+  };
+  return callWechatApi("POST", "/v3/refund/domestic/refunds", payload);
+}
+
 function verifyWechatNotify(rawBody, headers) {
   if (WECHAT_PAY_SKIP_NOTIFY_VERIFY) {
     return true;
@@ -487,6 +513,14 @@ function mapWechatTradeState(tradeState) {
   if (tradeState === "REFUND") return "refunded";
   if (tradeState === "CLOSED" || tradeState === "REVOKED") return "closed";
   return "failed";
+}
+
+function mapWechatRefundStatus(status) {
+  if (status === "SUCCESS") return "success";
+  if (status === "PROCESSING") return "processing";
+  if (status === "ABNORMAL") return "abnormal";
+  if (status === "CLOSED") return "closed";
+  return "unknown";
 }
 
 async function handleWechatNotify(req, res) {
@@ -597,6 +631,81 @@ async function handlePaymentStatus(req, res, orderId) {
   });
 }
 
+async function handleRefund(req, res) {
+  const body = await parseBody(req);
+  const order = findOrder(body.orderId);
+  if (!order) {
+    fail(res, 404, "Order not found");
+    return;
+  }
+
+  if (!order.outTradeNo && WECHAT_PAY_PROVIDER !== "mock") {
+    fail(res, 409, "Order has no WeChat payment trade number");
+    return;
+  }
+
+  if (order.payStatus !== "paid" && order.payStatus !== "refunded") {
+    fail(res, 409, "Order is not in paid status");
+    return;
+  }
+
+  if (order.refundStatus === "success" || order.refundStatus === "processing") {
+    ok(res, {
+      orderId: order.id,
+      refundStatus: order.refundStatus,
+      order
+    }, "refund-already-created");
+    return;
+  }
+
+  const refundAmountFen = Number(body.refundAmountFen || order.paymentAmountFen || 0);
+  if (!refundAmountFen || refundAmountFen < 1) {
+    fail(res, 400, "Invalid refund amount");
+    return;
+  }
+
+  if (WECHAT_PAY_PROVIDER === "mock") {
+    const nextOrder = updateOrder(order.id, {
+      refundStatus: "success",
+      outRefundNo: order.outRefundNo || createOutRefundNo(),
+      refundId: order.refundId || `MOCKREF${Date.now()}`,
+      refundAmountFen,
+      refundedAt: nowText(),
+      payStatus: "refunded"
+    });
+    ok(res, {
+      provider: "mock",
+      refunded: true,
+      orderId: order.id,
+      refundStatus: nextOrder.refundStatus,
+      order: nextOrder
+    }, "mock-refunded");
+    return;
+  }
+
+  try {
+    const refund = await createWechatRefund(order, body);
+    const nextOrder = updateOrder(order.id, {
+      refundStatus: mapWechatRefundStatus(refund.status || ""),
+      outRefundNo: refund.out_refund_no || order.outRefundNo || "",
+      refundId: refund.refund_id || order.refundId || "",
+      refundAmountFen,
+      refundedAt: refund.success_time || order.refundedAt || "",
+      payStatus: refund.status === "SUCCESS" ? "refunded" : order.payStatus
+    });
+    ok(res, {
+      provider: "wechatpay",
+      refunded: refund.status === "SUCCESS",
+      orderId: order.id,
+      refundStatus: nextOrder.refundStatus,
+      order: nextOrder,
+      raw: refund
+    }, "refund-created");
+  } catch (error) {
+    fail(res, error.statusCode || 500, error.message || "WeChat refund failed");
+  }
+}
+
 async function handle(req, res) {
   if (req.method === "OPTIONS") {
     jsonResponse(res, 204, {});
@@ -703,6 +812,11 @@ async function handle(req, res) {
   const paymentStatusMatch = pathname.match(/^\/api\/v1\/payments\/([^/]+)\/status$/);
   if (paymentStatusMatch && req.method === "GET") {
     await handlePaymentStatus(req, res, decodeURIComponent(paymentStatusMatch[1]));
+    return;
+  }
+
+  if (pathname === "/api/v1/refunds" && req.method === "POST") {
+    await handleRefund(req, res);
     return;
   }
 
