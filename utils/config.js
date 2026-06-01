@@ -5,6 +5,7 @@ const appConfig = {
   apiBaseUrl: "https://api.your-domain.com",
   tenantId: "shanfeng-demo",
   requestTimeout: 15000,
+  paymentMode: "mock", // mock | wechatpay
   servicePhone: "400-188-2026",
   mapProvider: "tencent",
   privacyUrl: "https://your-domain.com/privacy",
@@ -19,6 +20,8 @@ const appConfig = {
     addressBook: "/api/v1/addresses",
     servicePoints: "/api/v1/service-points",
     serviceTickets: "/api/v1/service-tickets",
+    wechatPrepay: "/api/v1/payments/wechat/prepay",
+    paymentStatus: "/api/v1/payments/:orderId/status",
     uploadFile: "/api/v1/files",
     login: "/api/v1/auth/wechat-login"
   }

@@ -37,6 +37,7 @@ for (const file of [
   "app.js",
   "utils/config.js",
   "utils/apiClient.js",
+  "utils/paymentStore.js",
   "utils/orderStore.js",
   "utils/userStore.js"
 ]) {
@@ -81,4 +82,3 @@ for (const file of scanFiles) {
 if (!process.exitCode) {
   console.log("Douyin mini program validation passed.");
 }
-

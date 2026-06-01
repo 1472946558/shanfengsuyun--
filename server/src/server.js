@@ -10,9 +10,23 @@ const ORDERS_FILE = path.join(DATA_DIR, "orders.json");
 const TICKETS_FILE = path.join(DATA_DIR, "tickets.json");
 const TENANT_ID = process.env.TENANT_ID || "shanfeng-demo";
 const ALLOW_ORIGIN = process.env.ALLOW_ORIGIN || "*";
+
 const DOUYIN_APP_ID = process.env.DOUYIN_APP_ID || "";
 const DOUYIN_APP_SECRET = process.env.DOUYIN_APP_SECRET || "";
 const DOUYIN_CODE2SESSION_URL = process.env.DOUYIN_CODE2SESSION_URL || "https://developer.toutiao.com/api/apps/v2/jscode2session";
+
+const WECHAT_APP_ID = process.env.WECHAT_APP_ID || "";
+const WECHAT_APP_SECRET = process.env.WECHAT_APP_SECRET || "";
+const WECHAT_CODE2SESSION_URL = process.env.WECHAT_CODE2SESSION_URL || "https://api.weixin.qq.com/sns/jscode2session";
+const WECHAT_PAY_PROVIDER = process.env.WECHAT_PAY_PROVIDER || "mock";
+const WECHAT_PAY_MCH_ID = process.env.WECHAT_PAY_MCH_ID || "";
+const WECHAT_PAY_NOTIFY_URL = process.env.WECHAT_PAY_NOTIFY_URL || "";
+const WECHAT_PAY_PRIVATE_KEY_PATH = process.env.WECHAT_PAY_PRIVATE_KEY_PATH || "";
+const WECHAT_PAY_MCH_SERIAL_NO = process.env.WECHAT_PAY_MCH_SERIAL_NO || "";
+const WECHAT_PAY_API_V3_KEY = process.env.WECHAT_PAY_API_V3_KEY || "";
+const WECHAT_PAY_PLATFORM_CERT_PATH = process.env.WECHAT_PAY_PLATFORM_CERT_PATH || "";
+const WECHAT_PAY_SKIP_NOTIFY_VERIFY = process.env.WECHAT_PAY_SKIP_NOTIFY_VERIFY === "true";
+const WECHAT_PAY_BASE_URL = process.env.WECHAT_PAY_BASE_URL || "https://api.mch.weixin.qq.com";
 
 const statusSteps = ["created", "accepted", "picked", "transit", "delivering", "completed"];
 const serviceTypes = ["标快", "特快", "同城急送", "大件快运"];
@@ -37,6 +51,11 @@ function writeJson(file, data) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2));
 }
 
+function readTextFile(file) {
+  if (!file || !fs.existsSync(file)) return "";
+  return fs.readFileSync(file, "utf8");
+}
+
 function nowText() {
   const date = new Date();
   const pad = (value) => String(value).padStart(2, "0");
@@ -48,23 +67,55 @@ function createWaybillNo() {
   return `SFH${Date.now()}${suffix}`;
 }
 
+function createOutTradeNo() {
+  return `SFHPAY${Date.now()}${crypto.randomBytes(2).toString("hex").toUpperCase()}`;
+}
+
 function createToken(payload) {
   const principal = payload.openid || payload.anonymous_openid || payload.userId || "guest";
   const raw = `${principal}:${Date.now()}:${crypto.randomBytes(12).toString("hex")}`;
   return crypto.createHash("sha256").update(raw).digest("hex");
 }
 
+function createHttpError(statusCode, message) {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  return error;
+}
+
+function sha256(text) {
+  return crypto.createHash("sha256").update(String(text || "")).digest("hex");
+}
+
+function withPaymentDefaults(order = {}) {
+  const next = Object.assign({
+    paymentAmountFen: 0,
+    payProvider: "none",
+    payStatus: "unpaid",
+    paymentRequired: true,
+    outTradeNo: "",
+    prepayId: "",
+    transactionId: "",
+    paidAt: "",
+    paymentAttemptedAt: "",
+    refundStatus: "none",
+    notifyPayloadDigest: ""
+  }, order);
+
+  if (!next.paymentAmountFen && typeof next.price === "number") {
+    next.paymentAmountFen = Math.round(next.price * 100);
+  }
+
+  return next;
+}
+
 async function douyinCode2Session(body) {
   if (!DOUYIN_APP_ID || !DOUYIN_APP_SECRET) {
-    const error = new Error("Douyin AppID/AppSecret is not configured on server");
-    error.statusCode = 500;
-    throw error;
+    throw createHttpError(500, "Douyin AppID/AppSecret is not configured on server");
   }
 
   if (!body.code && !body.anonymous_code) {
-    const error = new Error("Missing Douyin login code");
-    error.statusCode = 400;
-    throw error;
+    throw createHttpError(400, "Missing Douyin login code");
   }
 
   const response = await fetch(DOUYIN_CODE2SESSION_URL, {
@@ -81,12 +132,31 @@ async function douyinCode2Session(body) {
   const errNo = payload.err_no ?? payload.errcode ?? payload.error;
 
   if (!response.ok || (errNo !== undefined && Number(errNo) !== 0)) {
-    const error = new Error(payload.err_tips || payload.errmsg || payload.message || "Douyin code2Session failed");
-    error.statusCode = 502;
-    throw error;
+    throw createHttpError(502, payload.err_tips || payload.errmsg || payload.message || "Douyin code2Session failed");
   }
 
   return payload.data || payload;
+}
+
+async function wechatCode2Session(code) {
+  if (!WECHAT_APP_ID || !WECHAT_APP_SECRET) {
+    throw createHttpError(500, "WeChat AppID/AppSecret is not configured on server");
+  }
+  if (!code) {
+    throw createHttpError(400, "Missing WeChat login code");
+  }
+
+  const url = new URL(WECHAT_CODE2SESSION_URL);
+  url.searchParams.set("appid", WECHAT_APP_ID);
+  url.searchParams.set("secret", WECHAT_APP_SECRET);
+  url.searchParams.set("js_code", code);
+  url.searchParams.set("grant_type", "authorization_code");
+  const response = await fetch(url);
+  const payload = await response.json();
+  if (!response.ok || payload.errcode) {
+    throw createHttpError(502, payload.errmsg || "WeChat code2Session failed");
+  }
+  return payload;
 }
 
 function estimatePrice(form = {}) {
@@ -125,7 +195,7 @@ function buildTrackEvents(status = "accepted") {
 
 function seedOrders() {
   return [
-    {
+    withPaymentDefaults({
       id: "SFH20260510001",
       waybillNo: "SFH20260510001",
       serviceType: "特快",
@@ -149,18 +219,34 @@ function seedOrders() {
         { status: "picked", title: "已揽收", time: "2026-05-10 10:06", desc: "快件已完成揽收并进入转运流程" },
         { status: "transit", title: "运输中", time: "2026-05-10 13:42", desc: "快件正在前往目的地分拨中心" }
       ]
-    }
+    })
   ];
 }
 
 function getOrders() {
   ensureDataFiles();
-  return readJson(ORDERS_FILE, []);
+  return readJson(ORDERS_FILE, []).map((order) => withPaymentDefaults(order));
 }
 
 function saveOrders(orders) {
   ensureDataFiles();
-  writeJson(ORDERS_FILE, orders);
+  writeJson(ORDERS_FILE, (orders || []).map((order) => withPaymentDefaults(order)));
+}
+
+function findOrder(orderId) {
+  return getOrders().find((item) => item.id === orderId || item.waybillNo === orderId || item.outTradeNo === orderId) || null;
+}
+
+function updateOrder(orderId, patch) {
+  const orders = getOrders();
+  const index = orders.findIndex((item) => item.id === orderId || item.waybillNo === orderId || item.outTradeNo === orderId);
+  if (index === -1) {
+    return null;
+  }
+  const nextOrder = withPaymentDefaults(Object.assign({}, orders[index], patch));
+  orders[index] = nextOrder;
+  saveOrders(orders);
+  return nextOrder;
 }
 
 function jsonResponse(res, statusCode, body) {
@@ -181,28 +267,28 @@ function fail(res, statusCode, message, code = statusCode) {
   jsonResponse(res, statusCode, { code, message, data: null });
 }
 
-function parseBody(req) {
+function parseRawBody(req) {
   return new Promise((resolve, reject) => {
     let raw = "";
     req.on("data", (chunk) => {
       raw += chunk;
       if (raw.length > 1024 * 1024) {
-        reject(new Error("Payload too large"));
+        reject(createHttpError(413, "Payload too large"));
         req.destroy();
       }
     });
-    req.on("end", () => {
-      if (!raw) {
-        resolve({});
-        return;
-      }
-      try {
-        resolve(JSON.parse(raw));
-      } catch (error) {
-        reject(error);
-      }
-    });
+    req.on("end", () => resolve(raw));
   });
+}
+
+async function parseBody(req) {
+  const raw = await parseRawBody(req);
+  if (!raw) return {};
+  try {
+    return JSON.parse(raw);
+  } catch {
+    throw createHttpError(400, "Invalid JSON payload");
+  }
 }
 
 function requireTenant(req, res) {
@@ -215,7 +301,7 @@ function requireTenant(req, res) {
 function createOrder(form) {
   const estimate = estimatePrice(form);
   const waybillNo = createWaybillNo();
-  return {
+  return withPaymentDefaults({
     id: waybillNo,
     waybillNo,
     serviceType: form.serviceType || "标快",
@@ -234,7 +320,7 @@ function createOrder(form) {
     courierPhone: "待分配",
     createdAt: nowText(),
     trackEvents: buildTrackEvents("accepted")
-  };
+  });
 }
 
 function addresses() {
@@ -252,6 +338,265 @@ function servicePoints() {
   ];
 }
 
+function ensureWechatPayConfig() {
+  if (WECHAT_PAY_PROVIDER !== "wechatpay") {
+    return;
+  }
+  const missing = [];
+  if (!WECHAT_APP_ID) missing.push("WECHAT_APP_ID");
+  if (!WECHAT_PAY_MCH_ID) missing.push("WECHAT_PAY_MCH_ID");
+  if (!WECHAT_PAY_NOTIFY_URL) missing.push("WECHAT_PAY_NOTIFY_URL");
+  if (!WECHAT_PAY_PRIVATE_KEY_PATH) missing.push("WECHAT_PAY_PRIVATE_KEY_PATH");
+  if (!WECHAT_PAY_MCH_SERIAL_NO) missing.push("WECHAT_PAY_MCH_SERIAL_NO");
+  if (!WECHAT_PAY_API_V3_KEY) missing.push("WECHAT_PAY_API_V3_KEY");
+  if (missing.length) {
+    throw createHttpError(500, `Missing WeChat Pay config: ${missing.join(", ")}`);
+  }
+}
+
+function signWechatMessage(message) {
+  const privateKeyPem = readTextFile(WECHAT_PAY_PRIVATE_KEY_PATH);
+  if (!privateKeyPem) {
+    throw createHttpError(500, "WeChat Pay private key file is missing");
+  }
+  const signer = crypto.createSign("RSA-SHA256");
+  signer.update(message);
+  signer.end();
+  return signer.sign(privateKeyPem, "base64");
+}
+
+function buildWechatAuthorization(method, urlPathWithQuery, bodyText) {
+  const nonceStr = crypto.randomBytes(16).toString("hex");
+  const timestamp = String(Math.floor(Date.now() / 1000));
+  const message = `${method}\n${urlPathWithQuery}\n${timestamp}\n${nonceStr}\n${bodyText}\n`;
+  const signature = signWechatMessage(message);
+  return `WECHATPAY2-SHA256-RSA2048 mchid="${WECHAT_PAY_MCH_ID}",nonce_str="${nonceStr}",timestamp="${timestamp}",serial_no="${WECHAT_PAY_MCH_SERIAL_NO}",signature="${signature}"`;
+}
+
+async function callWechatApi(method, pathname, body) {
+  ensureWechatPayConfig();
+  const bodyText = body ? JSON.stringify(body) : "";
+  const url = new URL(pathname, WECHAT_PAY_BASE_URL);
+  const response = await fetch(url, {
+    method,
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      Authorization: buildWechatAuthorization(method, url.pathname + url.search, bodyText)
+    },
+    body: bodyText || undefined
+  });
+  const text = await response.text();
+  let payload = {};
+  try {
+    payload = text ? JSON.parse(text) : {};
+  } catch {
+    payload = { raw: text };
+  }
+  if (!response.ok) {
+    throw createHttpError(502, payload.message || payload.code || "WeChat Pay API request failed");
+  }
+  return payload;
+}
+
+async function createWechatPrepay(order, openid, description) {
+  if (!openid) {
+    throw createHttpError(400, "Missing WeChat openid for payment");
+  }
+
+  const outTradeNo = order.outTradeNo || createOutTradeNo();
+  const payload = await callWechatApi("POST", "/v3/pay/transactions/jsapi", {
+    appid: WECHAT_APP_ID,
+    mchid: WECHAT_PAY_MCH_ID,
+    description: description || `闪蜂速运-${order.serviceType || "寄件服务"}`,
+    out_trade_no: outTradeNo,
+    notify_url: WECHAT_PAY_NOTIFY_URL,
+    amount: {
+      total: order.paymentAmountFen || Math.round(Number(order.price || 0) * 100),
+      currency: "CNY"
+    },
+    payer: {
+      openid
+    }
+  });
+  return {
+    outTradeNo,
+    prepayId: payload.prepay_id || ""
+  };
+}
+
+function buildWechatMiniProgramPayParams(prepayId) {
+  const timeStamp = String(Math.floor(Date.now() / 1000));
+  const nonceStr = crypto.randomBytes(16).toString("hex");
+  const pkg = `prepay_id=${prepayId}`;
+  const signType = "RSA";
+  const message = `${WECHAT_APP_ID}\n${timeStamp}\n${nonceStr}\n${pkg}\n`;
+  return {
+    timeStamp,
+    nonceStr,
+    package: pkg,
+    signType,
+    paySign: signWechatMessage(message)
+  };
+}
+
+async function queryWechatPaymentByOutTradeNo(outTradeNo) {
+  return callWechatApi("GET", `/v3/pay/transactions/out-trade-no/${encodeURIComponent(outTradeNo)}?mchid=${encodeURIComponent(WECHAT_PAY_MCH_ID)}`);
+}
+
+function verifyWechatNotify(rawBody, headers) {
+  if (WECHAT_PAY_SKIP_NOTIFY_VERIFY) {
+    return true;
+  }
+  const certPem = readTextFile(WECHAT_PAY_PLATFORM_CERT_PATH);
+  if (!certPem) {
+    throw createHttpError(500, "WeChat Pay platform certificate is missing");
+  }
+  const message = `${headers["wechatpay-timestamp"] || ""}\n${headers["wechatpay-nonce"] || ""}\n${rawBody}\n`;
+  const verifier = crypto.createVerify("RSA-SHA256");
+  verifier.update(message);
+  verifier.end();
+  const valid = verifier.verify(certPem, headers["wechatpay-signature"] || "", "base64");
+  if (!valid) {
+    throw createHttpError(401, "Invalid WeChat Pay callback signature");
+  }
+  return true;
+}
+
+function decryptWechatNotifyResource(resource) {
+  if (!WECHAT_PAY_API_V3_KEY) {
+    throw createHttpError(500, "Missing WeChat APIv3 key for callback decryption");
+  }
+  const nonce = Buffer.from(resource.nonce, "utf8");
+  const aad = Buffer.from(resource.associated_data || "", "utf8");
+  const ciphertext = Buffer.from(resource.ciphertext, "base64");
+  const data = ciphertext.subarray(0, ciphertext.length - 16);
+  const authTag = ciphertext.subarray(ciphertext.length - 16);
+  const decipher = crypto.createDecipheriv("aes-256-gcm", Buffer.from(WECHAT_PAY_API_V3_KEY, "utf8"), nonce);
+  decipher.setAuthTag(authTag);
+  if (aad.length) {
+    decipher.setAAD(aad);
+  }
+  const decrypted = Buffer.concat([decipher.update(data), decipher.final()]).toString("utf8");
+  return JSON.parse(decrypted);
+}
+
+function mapWechatTradeState(tradeState) {
+  if (tradeState === "SUCCESS") return "paid";
+  if (tradeState === "NOTPAY" || tradeState === "USERPAYING") return "pending";
+  if (tradeState === "REFUND") return "refunded";
+  if (tradeState === "CLOSED" || tradeState === "REVOKED") return "closed";
+  return "failed";
+}
+
+async function handleWechatNotify(req, res) {
+  const rawBody = await parseRawBody(req);
+  verifyWechatNotify(rawBody, req.headers);
+  const payload = rawBody ? JSON.parse(rawBody) : {};
+  const decrypted = decryptWechatNotifyResource(payload.resource || {});
+  const outTradeNo = decrypted.out_trade_no;
+  const tradeState = decrypted.trade_state || "";
+  const order = outTradeNo ? findOrder(outTradeNo) : null;
+
+  if (order) {
+    updateOrder(order.id, {
+      payProvider: "wechatpay",
+      payStatus: mapWechatTradeState(tradeState),
+      transactionId: decrypted.transaction_id || order.transactionId || "",
+      paidAt: tradeState === "SUCCESS" ? (decrypted.success_time || nowText()) : order.paidAt || "",
+      notifyPayloadDigest: sha256(rawBody)
+    });
+  }
+
+  jsonResponse(res, 200, { code: "SUCCESS", message: "成功" });
+}
+
+async function handleWechatPrepay(req, res) {
+  const body = await parseBody(req);
+  const order = findOrder(body.orderId);
+  if (!order) {
+    fail(res, 404, "Order not found");
+    return;
+  }
+
+  if (order.payStatus === "paid") {
+    ok(res, { provider: order.payProvider, paid: true, order });
+    return;
+  }
+
+  if (WECHAT_PAY_PROVIDER === "mock") {
+    const nextOrder = updateOrder(order.id, {
+      payProvider: "mock",
+      payStatus: "paid",
+      transactionId: order.transactionId || `MOCK${Date.now()}`,
+      paidAt: nowText(),
+      paymentAttemptedAt: nowText(),
+      outTradeNo: order.outTradeNo || createOutTradeNo()
+    });
+    ok(res, { provider: "mock", mock: true, paid: true, order: nextOrder }, "mock-paid");
+    return;
+  }
+
+  try {
+    const prepay = await createWechatPrepay(order, body.openid, body.description);
+    const nextOrder = updateOrder(order.id, {
+      payProvider: "wechatpay",
+      payStatus: "pending",
+      outTradeNo: prepay.outTradeNo,
+      prepayId: prepay.prepayId,
+      paymentAttemptedAt: nowText()
+    });
+    ok(res, {
+      provider: "wechatpay",
+      paid: false,
+      orderId: order.id,
+      payParams: buildWechatMiniProgramPayParams(prepay.prepayId),
+      order: nextOrder
+    }, "prepay-created");
+  } catch (error) {
+    fail(res, error.statusCode || 500, error.message || "WeChat prepay failed");
+  }
+}
+
+async function handlePaymentStatus(req, res, orderId) {
+  const order = findOrder(orderId);
+  if (!order) {
+    fail(res, 404, "Order not found");
+    return;
+  }
+
+  let nextOrder = order;
+  if (WECHAT_PAY_PROVIDER === "wechatpay" && order.outTradeNo && order.payStatus !== "paid") {
+    try {
+      const remote = await queryWechatPaymentByOutTradeNo(order.outTradeNo);
+      nextOrder = updateOrder(order.id, {
+        payProvider: "wechatpay",
+        payStatus: mapWechatTradeState(remote.trade_state || ""),
+        transactionId: remote.transaction_id || order.transactionId || "",
+        paidAt: remote.trade_state === "SUCCESS" ? (remote.success_time || order.paidAt || nowText()) : order.paidAt || ""
+      }) || order;
+    } catch (error) {
+      ok(res, {
+        orderId: order.id,
+        payStatus: order.payStatus,
+        provider: order.payProvider,
+        remoteError: error.message,
+        order
+      });
+      return;
+    }
+  }
+
+  ok(res, {
+    orderId: nextOrder.id,
+    payStatus: nextOrder.payStatus,
+    provider: nextOrder.payProvider,
+    transactionId: nextOrder.transactionId,
+    paidAt: nextOrder.paidAt,
+    order: nextOrder
+  });
+}
+
 async function handle(req, res) {
   if (req.method === "OPTIONS") {
     jsonResponse(res, 204, {});
@@ -262,7 +607,12 @@ async function handle(req, res) {
   const pathname = url.pathname.replace(/\/$/, "") || "/";
 
   if (pathname === "/health") {
-    ok(res, { service: "shanfeng-express-server", status: "ok", time: new Date().toISOString() });
+    ok(res, {
+      service: "shanfeng-express-server",
+      status: "ok",
+      time: new Date().toISOString(),
+      wechatPayProvider: WECHAT_PAY_PROVIDER
+    });
     return;
   }
 
@@ -271,16 +621,35 @@ async function handle(req, res) {
     return;
   }
 
-  if (!requireTenant(req, res)) return;
+  const isWechatNotifyPath = pathname === "/api/v1/payments/wechat/notify";
+  if (!isWechatNotifyPath && !requireTenant(req, res)) return;
 
   if (pathname === "/api/v1/auth/wechat-login") {
     const body = await parseBody(req);
     const profile = body.profile || {};
-    ok(res, {
-      userId: profile.id || `U${Date.now()}`,
-      token: crypto.randomBytes(16).toString("hex"),
-      profile
-    });
+    try {
+      if (body.code && WECHAT_APP_ID && WECHAT_APP_SECRET) {
+        const session = await wechatCode2Session(body.code);
+        const userId = session.openid || profile.id || `U${Date.now()}`;
+        ok(res, {
+          userId,
+          openid: session.openid || "",
+          unionid: session.unionid || "",
+          token: createToken({ userId, openid: session.openid }),
+          profile
+        });
+        return;
+      }
+
+      ok(res, {
+        userId: profile.id || `U${Date.now()}`,
+        token: crypto.randomBytes(16).toString("hex"),
+        openid: body.openid || "",
+        profile
+      });
+    } catch (error) {
+      fail(res, error.statusCode || 500, error.message || "WeChat login failed");
+    }
     return;
   }
 
@@ -316,16 +685,30 @@ async function handle(req, res) {
 
   if (pathname === "/api/v1/orders" && req.method === "POST") {
     const order = createOrder(await parseBody(req));
-    const orders = [order].concat(getOrders());
-    saveOrders(orders);
+    saveOrders([order].concat(getOrders()));
     ok(res, order, "created");
+    return;
+  }
+
+  if (pathname === "/api/v1/payments/wechat/prepay" && req.method === "POST") {
+    await handleWechatPrepay(req, res);
+    return;
+  }
+
+  if (pathname === "/api/v1/payments/wechat/notify" && req.method === "POST") {
+    await handleWechatNotify(req, res);
+    return;
+  }
+
+  const paymentStatusMatch = pathname.match(/^\/api\/v1\/payments\/([^/]+)\/status$/);
+  if (paymentStatusMatch && req.method === "GET") {
+    await handlePaymentStatus(req, res, decodeURIComponent(paymentStatusMatch[1]));
     return;
   }
 
   const orderDetailMatch = pathname.match(/^\/api\/v1\/orders\/([^/]+)$/);
   if (orderDetailMatch && req.method === "GET") {
-    const id = decodeURIComponent(orderDetailMatch[1]);
-    const order = getOrders().find((item) => item.id === id || item.waybillNo === id);
+    const order = findOrder(decodeURIComponent(orderDetailMatch[1]));
     if (!order) {
       fail(res, 404, "Order not found");
       return;
@@ -336,8 +719,7 @@ async function handle(req, res) {
 
   const orderTrackMatch = pathname.match(/^\/api\/v1\/orders\/([^/]+)\/track$/);
   if (orderTrackMatch && req.method === "GET") {
-    const id = decodeURIComponent(orderTrackMatch[1]);
-    const order = getOrders().find((item) => item.id === id || item.waybillNo === id);
+    const order = findOrder(decodeURIComponent(orderTrackMatch[1]));
     if (!order) {
       fail(res, 404, "Order not found");
       return;
@@ -349,8 +731,8 @@ async function handle(req, res) {
   const waybillTrackMatch = pathname.match(/^\/api\/v1\/waybills\/([^/]+)\/track$/);
   if (waybillTrackMatch && req.method === "GET") {
     const waybillNo = decodeURIComponent(waybillTrackMatch[1]);
-    const order = getOrders().find((item) => item.waybillNo === waybillNo || item.id === waybillNo);
-    ok(res, order || {
+    const order = findOrder(waybillNo);
+    ok(res, order || withPaymentDefaults({
       id: waybillNo,
       waybillNo,
       serviceType: "标快",
@@ -362,7 +744,7 @@ async function handle(req, res) {
       courierName: "暂未分配",
       courierPhone: "待分配",
       trackEvents: buildTrackEvents("transit")
-    });
+    }));
     return;
   }
 
@@ -398,7 +780,7 @@ ensureDataFiles();
 const server = http.createServer((req, res) => {
   handle(req, res).catch((error) => {
     console.error("[SERVER_ERROR]", error);
-    fail(res, 500, "Internal server error", 500);
+    fail(res, error.statusCode || 500, error.message || "Internal server error", error.statusCode || 500);
   });
 });
 

@@ -108,6 +108,7 @@ for (const required of [
   "sitemap.json",
   "utils/config.js",
   "utils/apiClient.js",
+  "utils/paymentStore.js",
   "utils/orderStore.js",
   "utils/userStore.js"
 ]) {
@@ -122,6 +123,7 @@ const runtimeFiles = [
   "app.wxss",
   "utils/config.js",
   "utils/apiClient.js",
+  "utils/paymentStore.js",
   "utils/orderStore.js",
   "utils/userStore.js",
   ...(app.pages || []).flatMap((page) => runtimeExtensions.map((ext) => `${page}${ext}`)),

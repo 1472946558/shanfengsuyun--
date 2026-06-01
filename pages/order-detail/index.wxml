@@ -18,6 +18,13 @@
     </view>
 
     <view class="card">
+      <view class="pay-status-strip {{order.payStatus === 'paid' ? 'is-paid' : 'is-unpaid'}}">
+        <view>
+          <text class="pay-status-label">支付状态</text>
+          <text class="pay-status-value">{{paymentStatusText}}</text>
+        </view>
+        <button wx:if="{{order.paymentRequired && order.payStatus !== 'paid'}}" class="ghost-btn small-btn" loading="{{paying}}" disabled="{{paying}}" bindtap="payAgain">继续支付</button>
+      </view>
       <view class="info-row">
         <view class="info-label"><image src="/assets/ui/pickup.png" mode="aspectFit" /><text class="muted">寄件地址</text></view>
         <text>{{order.fromAddress}}</text>
@@ -53,6 +60,10 @@
       <view class="info-row">
         <view class="info-label"><image src="/assets/ui/price.png" mode="aspectFit" /><text class="muted">费用</text></view>
         <text class="fee">¥{{order.price}}</text>
+      </view>
+      <view class="info-row">
+        <view class="info-label"><image src="/assets/ui/api.png" mode="aspectFit" /><text class="muted">支付单号</text></view>
+        <text>{{order.outTradeNo || '待生成'}}</text>
       </view>
       <view class="info-row">
         <view class="info-label"><image src="/assets/ui/clock.png" mode="aspectFit" /><text class="muted">创建时间</text></view>

@@ -1,5 +1,6 @@
 const { createOrderOnline, estimatePrice, serviceTypes, itemTypes, weights } = require("../../utils/orderStore");
 const { getProfile } = require("../../utils/userStore");
+const { payOrder } = require("../../utils/paymentStore");
 const { appConfig } = require("../../utils/config");
 
 Page({
@@ -29,7 +30,11 @@ Page({
     },
     submitting: false,
     submitButtonText: "确认寄件",
-    demoNotice: appConfig.mode === "mock" ? "当前为本地演示环境：提交后生成模拟运单，可在查件和订单页查看。" : "当前已连接客户服务器：寄件单会提交到正式后端，请确认信息无误。"
+    demoNotice: appConfig.mode === "mock"
+      ? "当前为本地演示环境：提交后生成模拟运单，并按模拟支付成功处理。"
+      : appConfig.paymentMode === "wechatpay"
+        ? "当前已连接客户服务器：寄件单创建后会继续拉起微信支付。"
+        : "当前已连接客户服务器：寄件单会提交到正式后端，支付仍处于调试模式。"
   },
 
   onLoad(query) {
@@ -141,9 +146,28 @@ Page({
     this.setData({ submitting: true, submitButtonText: "正在生成运单" });
     createOrderOnline(this.data.form)
       .then((order) => {
-        wx.showToast({ title: "寄件成功", icon: "success" });
+        this.setData({ submitButtonText: "正在拉起支付" });
+        return payOrder(order)
+          .then((paymentResult) => ({
+            orderId: order.id,
+            paid: paymentResult && paymentResult.payStatus === "paid",
+            message: paymentResult && paymentResult.mock ? "模拟支付成功" : "支付成功"
+          }))
+          .catch((error) => ({
+            orderId: order.id,
+            paid: false,
+            error
+          }));
+      })
+      .then((result) => {
+        if (!result) return;
+        if (result.paid) {
+          wx.showToast({ title: result.message || "支付成功", icon: "success" });
+        } else {
+          wx.showToast({ title: "订单已创建，待支付", icon: "none" });
+        }
         setTimeout(() => {
-          wx.navigateTo({ url: `/pages/order-detail/index?id=${order.id}` });
+          wx.navigateTo({ url: `/pages/order-detail/index?id=${result.orderId}` });
         }, 450);
       })
       .catch(() => {

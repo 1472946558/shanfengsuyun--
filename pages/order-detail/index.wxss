@@ -2,6 +2,39 @@
   font-size: 50rpx;
 }
 
+.pay-status-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+  padding: 24rpx 0 28rpx;
+  border-bottom: 1rpx solid var(--line);
+}
+
+.pay-status-strip.is-paid .pay-status-value {
+  color: #17a34a;
+}
+
+.pay-status-strip.is-unpaid .pay-status-value {
+  color: var(--brand-strong);
+}
+
+.pay-status-label,
+.pay-status-value {
+  display: block;
+}
+
+.pay-status-label {
+  color: var(--muted);
+  font-size: 24rpx;
+}
+
+.pay-status-value {
+  margin-top: 8rpx;
+  font-size: 32rpx;
+  font-weight: 900;
+}
+
 .info-row {
   display: flex;
   align-items: flex-start;

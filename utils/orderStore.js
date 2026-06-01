@@ -27,11 +27,11 @@ function createWaybillNo() {
 }
 
 function getOrders() {
-  return wx.getStorageSync(STORAGE_KEY) || [];
+  return (wx.getStorageSync(STORAGE_KEY) || []).map((order) => withPaymentDefaults(order));
 }
 
 function saveOrders(orders) {
-  wx.setStorageSync(STORAGE_KEY, orders);
+  wx.setStorageSync(STORAGE_KEY, (orders || []).map((order) => withPaymentDefaults(order)));
 }
 
 function seedOrders() {
@@ -112,6 +112,16 @@ function createOrder(form) {
     note: form.note,
     distance: estimate.distance,
     price: estimate.price,
+    paymentAmountFen: estimate.price * 100,
+    payProvider: "none",
+    payStatus: "unpaid",
+    paymentRequired: true,
+    outTradeNo: "",
+    prepayId: "",
+    transactionId: "",
+    paidAt: "",
+    paymentAttemptedAt: "",
+    refundStatus: "none",
     eta: estimate.eta,
     status: "accepted",
     courierName: "系统派单中",
@@ -124,6 +134,27 @@ function createOrder(form) {
   return order;
 }
 
+function withPaymentDefaults(order) {
+  const next = Object.assign({
+    paymentAmountFen: 0,
+    payProvider: "none",
+    payStatus: "unpaid",
+    paymentRequired: true,
+    outTradeNo: "",
+    prepayId: "",
+    transactionId: "",
+    paidAt: "",
+    paymentAttemptedAt: "",
+    refundStatus: "none"
+  }, order || {});
+
+  if (!next.paymentAmountFen && typeof next.price === "number") {
+    next.paymentAmountFen = Math.round(next.price * 100);
+  }
+
+  return next;
+}
+
 function normalizeServerOrder(payload, form) {
   const data = (payload && payload.data ? payload.data : payload) || {};
   const source = form || {};
@@ -133,7 +164,7 @@ function normalizeServerOrder(payload, form) {
     weight: "1kg以内"
   }, source));
   const waybillNo = data.waybillNo || data.orderNo || data.id || source.waybillNo || createWaybillNo();
-  return {
+  return withPaymentDefaults({
     id: data.id || waybillNo,
     waybillNo,
     serviceType: data.serviceType || source.serviceType || "标快",
@@ -151,8 +182,18 @@ function normalizeServerOrder(payload, form) {
     courierName: data.courierName || "等待派单",
     courierPhone: data.courierPhone || "待分配",
     createdAt: data.createdAt || nowText(),
-    trackEvents: data.trackEvents || source.trackEvents || buildTrackEvents(data.status || "created")
-  };
+    trackEvents: data.trackEvents || source.trackEvents || buildTrackEvents(data.status || "created"),
+    paymentAmountFen: data.paymentAmountFen,
+    payProvider: data.payProvider,
+    payStatus: data.payStatus,
+    paymentRequired: data.paymentRequired,
+    outTradeNo: data.outTradeNo,
+    prepayId: data.prepayId,
+    transactionId: data.transactionId,
+    paidAt: data.paidAt,
+    paymentAttemptedAt: data.paymentAttemptedAt,
+    refundStatus: data.refundStatus
+  });
 }
 
 function normalizeServerOrders(payload) {

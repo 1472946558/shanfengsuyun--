@@ -10,6 +10,8 @@ function getDefaultProfile() {
     qq: "",
     company: "",
     city: "深圳",
+    openid: "",
+    unionid: "",
     defaultFromAddress: "",
     defaultToAddress: "",
     token: "",
@@ -60,7 +62,9 @@ function loginOnline(profile) {
           const data = payload && payload.data ? payload.data : payload;
           resolve(saveProfile(Object.assign({}, profile, {
             id: data.userId || data.id || profile.id,
-            token: data.token || profile.token || ""
+            token: data.token || profile.token || "",
+            openid: data.openid || profile.openid || "",
+            unionid: data.unionid || profile.unionid || ""
           })));
         }).catch(reject);
       },
