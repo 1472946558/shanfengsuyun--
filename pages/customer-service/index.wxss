@@ -1,0 +1,32 @@
+.service-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+.service-item image {
+  width: 64rpx;
+  height: 64rpx;
+  flex: 0 0 64rpx;
+}
+
+.service-item view {
+  flex: 1;
+}
+
+.service-title,
+.service-desc {
+  display: block;
+}
+
+.service-title {
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.service-desc {
+  margin-top: 8rpx;
+  color: var(--muted);
+  font-size: 24rpx;
+}

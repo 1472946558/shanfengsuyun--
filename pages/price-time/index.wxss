@@ -1,0 +1,21 @@
+.field-head {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  margin-bottom: 10rpx;
+}
+
+.field-head .label {
+  margin-bottom: 0;
+}
+
+.field-icon,
+.price-icon {
+  width: 40rpx;
+  height: 40rpx;
+}
+
+.price-icon {
+  display: block;
+  margin-bottom: 10rpx;
+}

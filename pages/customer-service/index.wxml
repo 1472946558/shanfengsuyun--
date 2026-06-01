@@ -1,0 +1,16 @@
+<view class="page">
+  <view class="dark-hero">
+    <text class="eyebrow">SERVICE CENTER</text>
+    <text class="hero-title">客服中心</text>
+    <text class="hero-subtitle">把异常件、理赔、改约和企业服务统一收口到工单系统。</text>
+  </view>
+
+  <view class="card service-item" wx:for="{{tickets}}" wx:key="title" bindtap="createTicket" data-title="{{item.title}}">
+    <image src="{{item.icon}}" mode="aspectFit" />
+    <view>
+      <text class="service-title">{{item.title}}</text>
+      <text class="service-desc">{{item.desc}}</text>
+    </view>
+    <text class="muted">›</text>
+  </view>
+</view>

@@ -1,0 +1,132 @@
+<view class="page home">
+  <view class="brand-strip">
+    <view>
+      <text class="brand-name">闪蜂速运</text>
+      <text class="brand-desc">寄快递 · 查快递 · 管订单</text>
+    </view>
+    <text class="brand-chip">原创商用版</text>
+  </view>
+
+  <view class="dark-hero">
+    <text class="eyebrow">SHANFENG EXPRESS</text>
+    <text class="hero-title">一键寄件，全程可查</text>
+    <text class="hero-subtitle">面向个人和企业的快递寄送小程序。支持上门取件、运费时效、运单查询、订单管理和售后客服。</text>
+    <view class="hero-metrics">
+      <view class="hero-metric" wx:for="{{metrics}}" wx:key="label">
+        <text class="metric-value">{{item.value}}</text>
+        <text class="metric-label">{{item.label}}</text>
+      </view>
+    </view>
+    <view class="hero-actions">
+      <button class="hero-action hero-order" bindtap="goOrder">
+        <view class="hero-action-icon-wrap">
+          <image class="hero-action-icon" src="/assets/ui/pickup.png" mode="aspectFit" />
+        </view>
+        <view class="hero-action-copy">
+          <text class="hero-action-title">寄快递</text>
+          <text class="hero-action-desc">上门取件</text>
+        </view>
+        <view class="hero-action-arrow">›</view>
+      </button>
+      <button class="hero-action hero-service" bindtap="goTrack">
+        <view class="hero-action-icon-wrap">
+          <image class="hero-action-icon" src="/assets/ui/route.png" mode="aspectFit" />
+        </view>
+        <view class="hero-action-copy">
+          <text class="hero-action-title">查快递</text>
+          <text class="hero-action-desc">运单轨迹</text>
+        </view>
+        <view class="hero-action-arrow">›</view>
+      </button>
+    </view>
+  </view>
+
+  <view class="section-title">
+    <view>
+      <text>常用服务</text>
+      <text class="section-kicker">对齐成熟快递小程序的核心入口，但品牌与素材全部原创</text>
+    </view>
+  </view>
+  <view class="tool-grid">
+    <view class="tool-item" wx:for="{{tools}}" wx:key="name" bindtap="goTool" data-index="{{index}}">
+      <image src="{{item.icon}}" mode="aspectFit" />
+      <text>{{item.name}}</text>
+    </view>
+  </view>
+
+  <view class="section-title">
+    <view>
+      <text>寄件场景</text>
+      <text class="section-kicker">选择物品类型后可直接进入寄件单</text>
+    </view>
+  </view>
+  <view class="quick card subtle-card">
+    <view class="quick-item" wx:for="{{scenes}}" wx:key="name" bindtap="chooseScene" data-name="{{item.name}}">
+      <view class="quick-icon-wrap">
+        <image class="quick-icon" src="{{item.icon}}" mode="aspectFit" />
+      </view>
+      <text class="quick-name">{{item.name}}</text>
+      <text class="quick-desc">{{item.desc}}</text>
+    </view>
+  </view>
+
+  <view class="section-title">
+    <view>
+      <text>运费时效</text>
+      <text class="section-kicker">客户接入真实服务器后替换为正式计价 API</text>
+    </view>
+    <text class="muted small">模拟试算</text>
+  </view>
+  <view class="card estimator">
+    <view class="address-line">
+      <image class="line-icon" src="/assets/ui/pickup.png" mode="aspectFit" />
+      <input value="{{fromAddress}}" placeholder="寄件地址" bindinput="onFromInput" />
+    </view>
+    <view class="address-line">
+      <image class="line-icon" src="/assets/ui/dropoff.png" mode="aspectFit" />
+      <input value="{{toAddress}}" placeholder="收件地址" bindinput="onToInput" />
+    </view>
+    <view class="estimate-result">
+      <view>
+        <text class="muted">预估费用</text>
+        <text class="estimate-price">¥{{estimate.price}}</text>
+      </view>
+      <view class="estimate-meta">
+        <text>{{estimate.distance}}</text>
+        <text>{{estimate.eta}}</text>
+      </view>
+    </view>
+    <button class="primary-btn" bindtap="goOrderWithAddress">按此地址寄件</button>
+  </view>
+
+  <view class="section-title">
+    <view>
+      <text>寄件流程</text>
+      <text class="section-kicker">从预约上门到签收的最小商业闭环</text>
+    </view>
+  </view>
+  <view class="flow-card card">
+    <view class="flow-step" wx:for="{{flow}}" wx:key="name">
+      <image class="flow-icon" src="{{item.icon}}" mode="aspectFit" />
+      <text class="flow-num">0{{index + 1}}</text>
+      <text class="flow-name">{{item.name}}</text>
+    </view>
+  </view>
+
+  <view class="section-title">
+    <view>
+      <text>服务保障</text>
+      <text class="section-kicker">上线前逐步接入真实支付、地图、客服和后端订单系统</text>
+    </view>
+  </view>
+  <view class="promise-grid">
+    <view class="promise" wx:for="{{promises}}" wx:key="title">
+      <view class="promise-head">
+        <image class="promise-icon" src="{{item.icon}}" mode="aspectFit" />
+        <text class="promise-code">{{item.code}}</text>
+      </view>
+      <text class="promise-title">{{item.title}}</text>
+      <text class="promise-desc">{{item.desc}}</text>
+    </view>
+  </view>
+</view>

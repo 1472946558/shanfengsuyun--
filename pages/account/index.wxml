@@ -1,0 +1,53 @@
+<view class="page account-page">
+  <view class="dark-hero account-hero">
+    <text class="eyebrow">ACCOUNT SETUP</text>
+    <text class="hero-title">配置你的测试资料</text>
+    <text class="hero-subtitle">先用你的姓名、电话、微信和默认寄收件地址跑通完整流程，再交付给客户替换服务器。</text>
+  </view>
+
+  <view class="card form-card">
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/user.png" mode="aspectFit" /><text class="label">姓名</text></view>
+      <input class="input" placeholder="请输入姓名" value="{{form.name}}" data-key="name" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/phone.png" mode="aspectFit" /><text class="label">手机号</text></view>
+      <input class="input" type="number" placeholder="请输入手机号" value="{{form.phone}}" data-key="phone" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/wechat.png" mode="aspectFit" /><text class="label">微信</text></view>
+      <input class="input" placeholder="请输入微信号" value="{{form.wechat}}" data-key="wechat" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/qq.png" mode="aspectFit" /><text class="label">QQ</text></view>
+      <input class="input" type="number" placeholder="请输入 QQ" value="{{form.qq}}" data-key="qq" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/enterprise.png" mode="aspectFit" /><text class="label">公司/客户名</text></view>
+      <input class="input" placeholder="请输入公司或客户名称" value="{{form.company}}" data-key="company" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/city.png" mode="aspectFit" /><text class="label">城市</text></view>
+      <input class="input" placeholder="例如：深圳" value="{{form.city}}" data-key="city" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/pickup.png" mode="aspectFit" /><text class="label">默认寄件地址</text></view>
+      <input class="input" placeholder="用于寄件页自动带入" value="{{form.defaultFromAddress}}" data-key="defaultFromAddress" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/dropoff.png" mode="aspectFit" /><text class="label">默认收件地址</text></view>
+      <input class="input" placeholder="用于寄件页自动带入" value="{{form.defaultToAddress}}" data-key="defaultToAddress" bindinput="onInput" />
+    </view>
+  </view>
+
+  <view class="account-actions">
+    <button class="primary-btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submitProfile">{{submitText}}</button>
+    <button class="ghost-btn" bindtap="fillDemo">一键填测试资料</button>
+    <button class="text-btn" bindtap="logout">退出/清空资料</button>
+  </view>
+
+  <view class="notice">
+    <image class="notice-icon" src="/assets/ui/warning.png" mode="aspectFit" />
+    <text>正式商用时，这里应接入微信登录、手机号授权和客户后端用户系统。当前版本用于你本地完整演示和客户验收。</text>
+  </view>
+</view>

@@ -1,0 +1,39 @@
+.first-title {
+  margin-top: 8rpx;
+}
+
+.address-card {
+  margin-top: 18rpx;
+}
+
+.address-type {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  color: var(--brand-deep);
+  font-size: 24rpx;
+  font-weight: 900;
+}
+
+.address-type image {
+  width: 38rpx;
+  height: 38rpx;
+}
+
+.address-name,
+.address-text {
+  display: block;
+}
+
+.address-name {
+  margin-top: 24rpx;
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.address-text {
+  margin-top: 10rpx;
+  color: var(--muted);
+  font-size: 25rpx;
+  line-height: 1.5;
+}

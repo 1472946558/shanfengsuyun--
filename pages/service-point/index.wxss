@@ -1,0 +1,27 @@
+.point-card {
+  margin-top: 20rpx;
+}
+
+.point-title {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.point-title image {
+  width: 46rpx;
+  height: 46rpx;
+}
+
+.point-address {
+  display: block;
+  margin: 20rpx 0;
+  color: var(--muted);
+  font-size: 25rpx;
+}
+
+.point-btn {
+  margin-top: 24rpx;
+}

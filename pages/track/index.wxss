@@ -1,0 +1,326 @@
+.track-card .hero-title {
+  font-size: 52rpx;
+}
+
+.courier-card {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 34rpx;
+  padding: 22rpx;
+  border-radius: 24rpx;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.courier-name,
+.courier-phone {
+  display: block;
+}
+
+.courier-name {
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.courier-phone {
+  margin-top: 8rpx;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 24rpx;
+}
+
+.call-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8rpx;
+  padding: 18rpx 24rpx;
+  border-radius: 999rpx;
+  color: var(--ink);
+  font-size: 24rpx;
+  font-weight: 900;
+  background: var(--brand);
+}
+
+.call-btn image {
+  width: 32rpx;
+  height: 32rpx;
+}
+
+.timeline {
+  padding-left: 34rpx;
+}
+
+.step {
+  position: relative;
+  display: flex;
+  gap: 20rpx;
+  padding-bottom: 34rpx;
+}
+
+.step::before {
+  content: "";
+  position: absolute;
+  left: 18rpx;
+  top: 38rpx;
+  bottom: 0;
+  width: 2rpx;
+  background: var(--line);
+}
+
+.step:last-child::before {
+  display: none;
+}
+
+.step-dot {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 38rpx;
+  height: 38rpx;
+  border: 4rpx solid #d8dde6;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.step-dot image {
+  width: 28rpx;
+  height: 28rpx;
+  opacity: 0.42;
+}
+
+.step.done .step-dot {
+  border-color: var(--brand);
+  background: var(--ink);
+}
+
+.step.done .step-dot image {
+  opacity: 1;
+}
+
+.step-title {
+  display: block;
+  font-size: 29rpx;
+  font-weight: 900;
+}
+
+.step-desc {
+  display: block;
+  margin-top: 8rpx;
+  color: var(--muted);
+  font-size: 24rpx;
+}
+
+.map-mock {
+  display: flex;
+  flex-direction: column;
+  gap: 22rpx;
+}
+
+.map-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.map-title-row image {
+  width: 44rpx;
+  height: 44rpx;
+}
+
+.map-title {
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.route-line {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  height: 130rpx;
+}
+
+.route-point {
+  width: 62rpx;
+  height: 62rpx;
+}
+
+.route-road {
+  flex: 1;
+  height: 8rpx;
+  border-radius: 999rpx;
+  background: repeating-linear-gradient(90deg, #dce2ec 0, #dce2ec 18rpx, transparent 18rpx, transparent 30rpx);
+}
+
+.route-bike {
+  width: 58rpx;
+  height: 58rpx;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  text-align: center;
+}
+
+.empty-title {
+  font-size: 34rpx;
+  font-weight: 900;
+}
+
+.query-card {
+  margin-top: 8rpx;
+}
+
+.query-title {
+  display: flex;
+  align-items: center;
+  gap: 18rpx;
+}
+
+.query-title image {
+  width: 58rpx;
+  height: 58rpx;
+}
+
+.query-heading {
+  display: block;
+  font-size: 34rpx;
+  font-weight: 900;
+}
+
+.query-box {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-top: 24rpx;
+  padding: 10rpx;
+  border-radius: 28rpx;
+  background: #f7f8fb;
+}
+
+.query-box input {
+  flex: 1;
+  height: 72rpx;
+  padding: 0 16rpx;
+  font-size: 26rpx;
+}
+
+.query-box button {
+  width: 132rpx;
+  height: 72rpx;
+  border-radius: 999rpx;
+  color: var(--ink);
+  font-size: 26rpx;
+  font-weight: 900;
+  background: var(--brand);
+}
+
+.route-card {
+  padding: 28rpx 26rpx;
+}
+
+.route-card-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 24rpx;
+}
+
+.route-card-title {
+  font-size: 31rpx;
+  font-weight: 900;
+}
+
+.route-card-desc {
+  color: var(--muted);
+  font-size: 22rpx;
+}
+
+.route-path {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.route-stop {
+  display: flex;
+  align-items: flex-start;
+  gap: 18rpx;
+  min-width: 0;
+}
+
+.route-stop-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 76rpx;
+  width: 76rpx;
+  height: 76rpx;
+  border-radius: 24rpx;
+  box-shadow:
+    inset 0 1rpx 0 rgba(255, 255, 255, 0.9),
+    0 14rpx 30rpx rgba(16, 17, 20, 0.08);
+}
+
+.route-stop-icon-from {
+  background: linear-gradient(180deg, #f2feff 0%, #e9fbfc 100%);
+}
+
+.route-stop-icon-to {
+  background: linear-gradient(180deg, #f4feff 0%, #eefbfd 100%);
+}
+
+.route-icon {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.route-stop-copy {
+  min-width: 0;
+  flex: 1;
+  padding-top: 6rpx;
+}
+
+.route-label,
+.route-text,
+.route-card-title,
+.route-card-desc {
+  display: block;
+}
+
+.route-label {
+  color: var(--muted);
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.route-text {
+  margin-top: 10rpx;
+  font-size: 28rpx;
+  font-weight: 900;
+  line-height: 1.45;
+}
+
+.route-divider {
+  display: flex;
+  justify-content: flex-start;
+  padding: 10rpx 0 10rpx 36rpx;
+}
+
+.route-divider-line {
+  width: 4rpx;
+  height: 32rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(180deg, rgba(215, 177, 90, 0.86), rgba(184, 137, 45, 0.34));
+}
+
+.step-time {
+  display: block;
+  margin-top: 6rpx;
+  color: var(--brand-deep);
+  font-size: 22rpx;
+  font-weight: 800;
+}

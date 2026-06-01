@@ -1,0 +1,19 @@
+<view class="page">
+  <view class="dark-hero">
+    <text class="eyebrow">SERVICE POINTS</text>
+    <text class="hero-title">服务网点</text>
+    <text class="hero-subtitle">展示附近收派站、服务点和分拨中心。正式版接入地图定位和网点 API。</text>
+  </view>
+
+  <view class="card point-card" wx:for="{{points}}" wx:key="name">
+    <view class="row between">
+      <view class="point-title"><image src="/assets/ui/city.png" mode="aspectFit" /><text>{{item.name}}</text></view>
+      <text class="status-pill">{{item.distance}}</text>
+    </view>
+    <text class="point-address">{{item.address}}</text>
+    <view class="pill-row">
+      <text class="tag" wx:for="{{item.tags}}" wx:key="*this">{{item}}</text>
+    </view>
+    <button class="ghost-btn point-btn" bindtap="callPoint">联系网点</button>
+  </view>
+</view>

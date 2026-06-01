@@ -1,0 +1,16 @@
+services:
+  api:
+    build:
+      context: ./server
+    container_name: shanfeng-express-api
+    env_file:
+      - ./server/.env
+    ports:
+      - "${API_PORT:-18083}:8080"
+    volumes:
+      - shanfeng_data:/data
+    restart: unless-stopped
+
+volumes:
+  shanfeng_data:
+

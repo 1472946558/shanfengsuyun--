@@ -1,0 +1,12 @@
+node_modules/
+.DS_Store
+__MACOSX/
+闪蜂速运/
+dist/
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.local
+server/.env
+server/data/*.json

@@ -1,0 +1,17 @@
+<view class="page">
+  <view class="section-title first-title">
+    <view>
+      <text>地址簿</text>
+      <text class="section-kicker">演示常用寄件、收件和企业地址，正式版接入后端地址 API。</text>
+    </view>
+  </view>
+
+  <view class="card address-card" wx:for="{{addresses}}" wx:key="address" bindtap="useAddress" data-index="{{index}}">
+    <view class="row between">
+      <view class="address-type"><image src="/assets/ui/pickup.png" mode="aspectFit" /><text>{{item.type}}</text></view>
+      <text class="muted">使用</text>
+    </view>
+    <text class="address-name">{{item.name}} · {{item.phone}}</text>
+    <text class="address-text">{{item.address}}</text>
+  </view>
+</view>

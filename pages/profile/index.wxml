@@ -1,0 +1,81 @@
+<view class="page profile">
+  <view class="dark-hero user-hero">
+    <text class="eyebrow">MEMBER</text>
+    <text class="hero-title">{{displayName}}</text>
+    <text class="hero-subtitle">{{displaySubtitle}}</text>
+    <view class="profile-actions">
+      <button class="profile-main-btn" bindtap="goAccount">{{accountButtonText}}</button>
+      <button wx:if="{{profile.loggedIn}}" class="profile-ghost-btn" bindtap="logout">退出</button>
+    </view>
+  </view>
+
+  <view wx:if="{{profile.loggedIn}}" class="card profile-card">
+    <view class="profile-row">
+      <view class="profile-label"><image src="/assets/ui/wechat.png" mode="aspectFit" /><text class="muted">微信</text></view>
+      <text>{{profile.wechat || '未填写'}}</text>
+    </view>
+    <view class="profile-row">
+      <view class="profile-label"><image src="/assets/ui/qq.png" mode="aspectFit" /><text class="muted">QQ</text></view>
+      <text>{{profile.qq || '未填写'}}</text>
+    </view>
+    <view class="profile-row">
+      <view class="profile-label"><image src="/assets/ui/pickup.png" mode="aspectFit" /><text class="muted">默认寄件</text></view>
+      <text>{{profile.defaultFromAddress || '未填写'}}</text>
+    </view>
+    <view class="profile-row">
+      <view class="profile-label"><image src="/assets/ui/dropoff.png" mode="aspectFit" /><text class="muted">默认收件</text></view>
+      <text>{{profile.defaultToAddress || '未填写'}}</text>
+    </view>
+  </view>
+
+  <view wx:else class="card login-card">
+    <text class="login-title">开始寄件前先配置资料</text>
+    <text class="login-desc">保存后，寄件页会自动带入默认地址，我的页面会显示你的联系方式。</text>
+    <button class="primary-btn" bindtap="goAccount">去登录/注册</button>
+  </view>
+
+  <view class="stats-card card">
+    <view class="stat">
+      <image class="stat-icon" src="/assets/ui/list.png" mode="aspectFit" />
+      <text class="stat-num">{{stats.orders}}</text>
+      <text class="muted">历史订单</text>
+    </view>
+    <view class="stat">
+      <image class="stat-icon" src="/assets/ui/coupon.png" mode="aspectFit" />
+      <text class="stat-num">{{stats.coupons}}</text>
+      <text class="muted">优惠券</text>
+    </view>
+    <view class="stat">
+      <image class="stat-icon" src="/assets/ui/pickup.png" mode="aspectFit" />
+      <text class="stat-num">{{stats.addresses}}</text>
+      <text class="muted">常用地址</text>
+    </view>
+  </view>
+
+  <view class="section-title">
+    <view>
+      <text>我的服务</text>
+      <text class="section-kicker">正式商用时接入真实会员、发票、优惠券和企业月结</text>
+    </view>
+  </view>
+  <view class="card menu">
+    <view class="menu-item" wx:for="{{menus}}" wx:key="title" bindtap="onMenuTap" data-title="{{item.title}}">
+      <view class="menu-icon-wrap">
+        <image class="menu-icon" src="{{item.icon}}" mode="aspectFit" />
+      </view>
+      <view class="menu-body">
+        <text class="menu-title">{{item.title}}</text>
+        <text class="menu-desc">{{item.desc}}</text>
+      </view>
+      <text class="muted">›</text>
+    </view>
+  </view>
+
+  <view class="card compliance">
+    <view class="compliance-head">
+      <image class="compliance-icon" src="/assets/ui/warning.png" mode="aspectFit" />
+      <text class="compliance-title">商用上线提醒</text>
+    </view>
+    <text class="compliance-text">正式运营前需补充隐私政策、用户协议、快递/同城配送相关资质、客服与投诉处理机制。</text>
+  </view>
+</view>

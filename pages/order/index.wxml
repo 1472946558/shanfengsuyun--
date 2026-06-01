@@ -1,0 +1,88 @@
+<view class="page">
+  <view class="order-head dark-hero">
+    <text class="eyebrow">CREATE WAYBILL</text>
+    <text class="hero-title">寄快递</text>
+    <text class="hero-subtitle">填写寄件、收件、物品和预约上门信息，提交后生成模拟运单。</text>
+    <view class="order-mini-flow">
+      <view><image src="/assets/ui/pickup.png" mode="aspectFit" /><text>地址</text></view>
+      <view><image src="/assets/ui/clock.png" mode="aspectFit" /><text>上门</text></view>
+      <view><image src="/assets/ui/route.png" mode="aspectFit" /><text>轨迹</text></view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/shield.png" mode="aspectFit" /><text class="label">服务产品</text></view>
+      <picker mode="selector" range="{{serviceTypes}}" value="{{serviceTypeIndex}}" bindchange="onServiceTypeChange">
+        <view class="picker-box">
+          <text>{{form.serviceType}}</text>
+          <text class="muted">选择</text>
+        </view>
+      </picker>
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/pickup.png" mode="aspectFit" /><text class="label">寄件地址</text></view>
+      <input class="input" placeholder="请输入寄件地址" value="{{form.fromAddress}}" data-key="fromAddress" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/dropoff.png" mode="aspectFit" /><text class="label">收件地址</text></view>
+      <input class="input" placeholder="请输入收件地址" value="{{form.toAddress}}" data-key="toAddress" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/clock.png" mode="aspectFit" /><text class="label">预约上门</text></view>
+      <picker mode="selector" range="{{pickupTimes}}" value="{{pickupTimeIndex}}" bindchange="onPickupTimeChange">
+        <view class="picker-box">
+          <text>{{form.pickupTime}}</text>
+          <text class="muted">选择</text>
+        </view>
+      </picker>
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/document.png" mode="aspectFit" /><text class="label">托寄物</text></view>
+      <picker mode="selector" range="{{itemTypes}}" value="{{itemTypeIndex}}" bindchange="onItemTypeChange">
+        <view class="picker-box">
+          <text>{{form.itemType}}</text>
+          <text class="muted">选择</text>
+        </view>
+      </picker>
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/weight.png" mode="aspectFit" /><text class="label">重量</text></view>
+      <picker mode="selector" range="{{weights}}" value="{{weightIndex}}" bindchange="onWeightChange">
+        <view class="picker-box">
+          <text>{{form.weight}}</text>
+          <text class="muted">选择</text>
+        </view>
+      </picker>
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/shield.png" mode="aspectFit" /><text class="label">保价金额</text></view>
+      <input class="input" type="number" placeholder="选填，例如 1000" value="{{form.insuredValue}}" data-key="insuredValue" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/note.png" mode="aspectFit" /><text class="label">备注</text></view>
+      <textarea class="textarea" placeholder="例如：易碎、需电话联系、当面签收" value="{{form.note}}" data-key="note" bindinput="onInput" />
+    </view>
+  </view>
+
+  <view class="price-box">
+    <view>
+      <image class="price-icon" src="/assets/ui/price.png" mode="aspectFit" />
+      <text class="price-label">ESTIMATE</text>
+      <text class="price">¥{{estimate.price}}</text>
+    </view>
+    <view class="price-side">
+      <text class="distance-chip">{{estimate.distance}}</text>
+      <text>{{estimate.eta}}</text>
+    </view>
+  </view>
+
+  <button class="primary-btn" loading="{{submitting}}" disabled="{{submitting}}" bindtap="submitOrder">
+    {{submitButtonText}}
+  </button>
+
+  <view class="notice">
+    <image class="notice-icon" src="/assets/ui/warning.png" mode="aspectFit" />
+    <text>{{demoNotice}}</text>
+  </view>
+</view>

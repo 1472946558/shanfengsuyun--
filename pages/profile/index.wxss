@@ -1,0 +1,188 @@
+.user-hero .hero-title {
+  font-size: 48rpx;
+}
+
+.profile-actions {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  gap: 16rpx;
+  margin-top: 30rpx;
+}
+
+.profile-main-btn,
+.profile-ghost-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 78rpx;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+  font-weight: 900;
+}
+
+.profile-main-btn {
+  flex: 1;
+  color: var(--ink);
+  background: linear-gradient(135deg, var(--brand), var(--brand-strong));
+}
+
+.profile-ghost-btn {
+  width: 148rpx;
+  color: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.profile-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24rpx;
+  padding: 20rpx 0;
+  border-bottom: 1rpx solid var(--line);
+  font-size: 26rpx;
+  font-weight: 800;
+}
+
+.profile-row:last-child {
+  border-bottom: 0;
+}
+
+.profile-label {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  flex: 0 0 140rpx;
+}
+
+.profile-label image {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.profile-row .muted {
+  font-weight: 500;
+}
+
+.login-card {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.login-title {
+  font-size: 32rpx;
+  font-weight: 900;
+}
+
+.login-desc {
+  color: var(--muted);
+  font-size: 24rpx;
+  line-height: 1.6;
+}
+
+.stats-card {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8rpx;
+}
+
+.stat-icon {
+  width: 46rpx;
+  height: 46rpx;
+}
+
+.stat-num {
+  font-size: 44rpx;
+  font-weight: 900;
+}
+
+.menu {
+  padding-top: 8rpx;
+  padding-bottom: 8rpx;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 20rpx;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid var(--line);
+}
+
+.menu-item:last-child {
+  border-bottom: 0;
+}
+
+.menu-icon-wrap {
+  display: grid;
+  place-items: center;
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 24rpx;
+  background: #f7f8fa;
+}
+
+.menu-icon {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+.menu-body {
+  flex: 1;
+}
+
+.menu-title,
+.menu-desc {
+  display: block;
+}
+
+.menu-title {
+  font-size: 29rpx;
+  font-weight: 900;
+}
+
+.menu-desc {
+  margin-top: 6rpx;
+  color: var(--muted);
+  font-size: 23rpx;
+}
+
+.compliance-head {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+}
+
+.compliance-icon {
+  width: 44rpx;
+  height: 44rpx;
+}
+
+.compliance-title {
+  display: block;
+  color: var(--brand-deep);
+  font-size: 28rpx;
+  font-weight: 900;
+}
+
+.compliance-text {
+  display: block;
+  margin-top: 10rpx;
+  color: var(--muted);
+  font-size: 24rpx;
+  line-height: 1.6;
+}

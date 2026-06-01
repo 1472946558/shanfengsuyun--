@@ -1,0 +1,52 @@
+{
+  "generatedAt": "2026-05-20T16:05:37.797Z",
+  "project": {
+    "id": "shanfeng-express-miniapp",
+    "name": "闪蜂速运小程序",
+    "client": "待补充",
+    "summary": "原创快递/同城配送微信小程序，包含寄件、查件、网点、客服、地址簿等完整前端交付包。",
+    "progressNote": "微信版前端交付包已完成，可继续接后端和正式上线链路。",
+    "folderPath": "/Users/xiaoliao/Desktop/openclaw/workspace/projects/shanfeng-express-miniapp",
+    "active": true
+  },
+  "kind": "miniapp-frontend",
+  "deployMode": "wechat-release",
+  "commands": [
+    "npm run validate:delivery"
+  ],
+  "evidence": [
+    "docs/QA_CHECKLIST.md"
+  ],
+  "evidenceCount": 1,
+  "deployment": {
+    "sources": [
+      "README.md"
+    ],
+    "notes": [],
+    "serverPurchased": false,
+    "serverVendor": "",
+    "serverRegion": "",
+    "testAddress": "",
+    "prodAddress": "",
+    "domain": "",
+    "domainStatus": "",
+    "apiDomain": "",
+    "adminDomain": "",
+    "staticDomain": "",
+    "uploadDomain": "",
+    "httpsStatus": "依赖客户正式 HTTPS API 域名",
+    "certExpiry": "",
+    "ports": [],
+    "envSource": "待补齐",
+    "database": "待补齐",
+    "redis": "待补齐",
+    "thirdParty": "微信小程序 AppID：待补齐",
+    "objectStorageStatus": ""
+  },
+  "files": {
+    "sop": "/Users/xiaoliao/Desktop/openclaw/workspace/projects/shanfeng-express-miniapp/08_go_live/GO_LIVE_SOP.md",
+    "checklist": "/Users/xiaoliao/Desktop/openclaw/workspace/projects/shanfeng-express-miniapp/08_go_live/GO_LIVE_CHECKLIST.md",
+    "profile": "/Users/xiaoliao/Desktop/openclaw/workspace/projects/shanfeng-express-miniapp/08_go_live/DEPLOYMENT_PROFILE.md",
+    "pack": "/Users/xiaoliao/Desktop/openclaw/workspace/projects/shanfeng-express-miniapp/08_go_live/GO_LIVE_PACK.json"
+  }
+}

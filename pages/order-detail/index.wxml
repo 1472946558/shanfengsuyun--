@@ -1,0 +1,79 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="card empty">
+    <text class="empty-title">正在加载订单</text>
+    <text class="muted">请稍候，系统正在同步订单详情。</text>
+  </view>
+
+  <view wx:elif="{{errorText}}" class="card empty">
+    <text class="empty-title">加载失败</text>
+    <text class="muted">{{errorText}}</text>
+    <button class="primary-btn" bindtap="goOrders">返回订单</button>
+  </view>
+
+  <view wx:elif="{{order}}">
+    <view class="dark-hero detail-hero">
+      <text class="eyebrow">WAYBILL</text>
+      <text class="hero-title">{{statusText}}</text>
+      <text class="hero-subtitle">运单号 {{order.waybillNo}}</text>
+    </view>
+
+    <view class="card">
+      <view class="info-row">
+        <view class="info-label"><image src="/assets/ui/pickup.png" mode="aspectFit" /><text class="muted">寄件地址</text></view>
+        <text>{{order.fromAddress}}</text>
+      </view>
+      <view class="info-row">
+        <view class="info-label"><image src="/assets/ui/dropoff.png" mode="aspectFit" /><text class="muted">收件地址</text></view>
+        <text>{{order.toAddress}}</text>
+      </view>
+      <view class="info-row">
+        <view class="info-label"><image src="/assets/ui/shield.png" mode="aspectFit" /><text class="muted">服务产品</text></view>
+        <text>{{order.serviceType}} · {{order.eta}}</text>
+      </view>
+      <view class="info-row">
+        <view class="info-label"><image src="/assets/ui/clock.png" mode="aspectFit" /><text class="muted">上门时间</text></view>
+        <text>{{order.pickupTime}}</text>
+      </view>
+      <view class="info-row">
+        <view class="info-label"><image src="/assets/ui/document.png" mode="aspectFit" /><text class="muted">物品</text></view>
+        <text>{{order.itemType}} · {{order.weight}}</text>
+      </view>
+      <view class="info-row">
+        <view class="info-label"><image src="/assets/ui/shield.png" mode="aspectFit" /><text class="muted">保价</text></view>
+        <text>¥{{order.insuredValue || 0}}</text>
+      </view>
+      <view class="info-row">
+        <view class="info-label"><image src="/assets/ui/note.png" mode="aspectFit" /><text class="muted">备注</text></view>
+        <text>{{order.note || '无'}}</text>
+      </view>
+      <view class="info-row">
+        <view class="info-label"><image src="/assets/ui/route.png" mode="aspectFit" /><text class="muted">距离</text></view>
+        <text>{{order.distance}}</text>
+      </view>
+      <view class="info-row">
+        <view class="info-label"><image src="/assets/ui/price.png" mode="aspectFit" /><text class="muted">费用</text></view>
+        <text class="fee">¥{{order.price}}</text>
+      </view>
+      <view class="info-row">
+        <view class="info-label"><image src="/assets/ui/clock.png" mode="aspectFit" /><text class="muted">创建时间</text></view>
+        <text>{{order.createdAt}}</text>
+      </view>
+    </view>
+
+    <view class="card courier">
+      <view class="courier-title-row"><image src="/assets/ui/courier.png" mode="aspectFit" /><text class="courier-title">收派员</text></view>
+      <view class="row between">
+        <view>
+          <text class="courier-name">{{order.courierName}}</text>
+          <text class="courier-phone">{{order.courierPhone}}</text>
+        </view>
+        <button class="ghost-btn small-btn" bindtap="goTrack">查看轨迹</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="card empty">
+    <text class="empty-title">运单不存在</text>
+    <button class="primary-btn" bindtap="goOrders">返回订单</button>
+  </view>
+</view>

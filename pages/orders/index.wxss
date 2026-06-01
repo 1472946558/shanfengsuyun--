@@ -1,0 +1,86 @@
+.first-title {
+  margin-top: 8rpx;
+}
+
+.small {
+  font-size: 24rpx;
+  font-weight: 500;
+}
+
+.title-with-icon,
+.order-id-wrap,
+.meta-left,
+.fee-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+}
+
+.title-with-icon image {
+  width: 42rpx;
+  height: 42rpx;
+}
+
+.order-id-wrap image,
+.meta-left image,
+.fee-wrap image {
+  width: 34rpx;
+  height: 34rpx;
+  flex: 0 0 34rpx;
+}
+
+.order-card {
+  margin-top: 18rpx;
+  transition: transform 0.18s ease;
+}
+
+.order-id {
+  color: var(--muted);
+  font-size: 22rpx;
+  font-weight: 700;
+}
+
+.route {
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+  margin: 26rpx 0;
+}
+
+.route-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.route-icon {
+  width: 42rpx;
+  height: 42rpx;
+  flex: 0 0 42rpx;
+}
+
+.meta {
+  color: var(--muted);
+  font-size: 24rpx;
+}
+
+.fee {
+  color: var(--ink);
+  font-size: 34rpx;
+  font-weight: 900;
+}
+
+.loading-card,
+.empty {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  text-align: center;
+}
+
+.empty-title {
+  font-size: 34rpx;
+  font-weight: 900;
+}

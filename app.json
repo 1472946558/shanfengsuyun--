@@ -1,0 +1,63 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/order/index",
+    "pages/track/index",
+    "pages/orders/index",
+    "pages/profile/index",
+    "pages/price-time/index",
+    "pages/address-book/index",
+    "pages/service-point/index",
+    "pages/customer-service/index",
+    "pages/order-detail/index",
+    "pages/account/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "闪蜂速运",
+    "navigationBarBackgroundColor": "#0F1B21",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F8F6F1",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "color": "#8A8F99",
+    "selectedColor": "#D7B15A",
+    "backgroundColor": "#0F1B21",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "首页",
+        "iconPath": "assets/tabbar/home-normal.png",
+        "selectedIconPath": "assets/tabbar/home-active.png"
+      },
+      {
+        "pagePath": "pages/order/index",
+        "text": "寄件",
+        "iconPath": "assets/tabbar/order-normal.png",
+        "selectedIconPath": "assets/tabbar/order-active.png"
+      },
+      {
+        "pagePath": "pages/track/index",
+        "text": "查件",
+        "iconPath": "assets/tabbar/track-normal.png",
+        "selectedIconPath": "assets/tabbar/track-active.png"
+      },
+      {
+        "pagePath": "pages/orders/index",
+        "text": "订单",
+        "iconPath": "assets/tabbar/orders-normal.png",
+        "selectedIconPath": "assets/tabbar/orders-active.png"
+      },
+      {
+        "pagePath": "pages/profile/index",
+        "text": "我的",
+        "iconPath": "assets/tabbar/profile-normal.png",
+        "selectedIconPath": "assets/tabbar/profile-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
+  "sitemapLocation": "sitemap.json"
+}

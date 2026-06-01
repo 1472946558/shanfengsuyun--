@@ -1,0 +1,50 @@
+<view class="page">
+  <view class="dark-hero">
+    <text class="eyebrow">PRICE & TIME</text>
+    <text class="hero-title">运费时效</text>
+    <text class="hero-subtitle">输入寄收件信息，提前试算不同服务产品的费用和预计时效。</text>
+  </view>
+
+  <view class="card">
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/shield.png" mode="aspectFit" /><text class="label">服务产品</text></view>
+      <picker mode="selector" range="{{serviceTypes}}" value="{{serviceTypeIndex}}" bindchange="onServiceTypeChange">
+        <view class="picker-box"><text>{{form.serviceType}}</text><text class="muted">选择</text></view>
+      </picker>
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/pickup.png" mode="aspectFit" /><text class="label">寄件城市/地址</text></view>
+      <input class="input" value="{{form.fromAddress}}" data-key="fromAddress" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/dropoff.png" mode="aspectFit" /><text class="label">收件城市/地址</text></view>
+      <input class="input" value="{{form.toAddress}}" data-key="toAddress" bindinput="onInput" />
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/document.png" mode="aspectFit" /><text class="label">托寄物</text></view>
+      <picker mode="selector" range="{{itemTypes}}" value="{{itemTypeIndex}}" bindchange="onItemTypeChange">
+        <view class="picker-box"><text>{{form.itemType}}</text><text class="muted">选择</text></view>
+      </picker>
+    </view>
+    <view class="field">
+      <view class="field-head"><image class="field-icon" src="/assets/ui/weight.png" mode="aspectFit" /><text class="label">重量</text></view>
+      <picker mode="selector" range="{{weights}}" value="{{weightIndex}}" bindchange="onWeightChange">
+        <view class="picker-box"><text>{{form.weight}}</text><text class="muted">选择</text></view>
+      </picker>
+    </view>
+  </view>
+
+  <view class="price-box">
+    <view>
+      <image class="price-icon" src="/assets/ui/price.png" mode="aspectFit" />
+      <text class="price-label">MOCK ESTIMATE</text>
+      <text class="price">¥{{estimate.price}}</text>
+    </view>
+    <view class="price-side">
+      <text class="distance-chip">{{estimate.distance}}</text>
+      <text>{{estimate.eta}}</text>
+    </view>
+  </view>
+
+  <button class="primary-btn" bindtap="useForOrder">按此价格去寄件</button>
+</view>

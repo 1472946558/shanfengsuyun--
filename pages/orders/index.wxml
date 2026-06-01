@@ -1,0 +1,49 @@
+<view class="page">
+  <view class="section-title first-title">
+    <view>
+      <view class="title-with-icon"><image src="/assets/ui/list.png" mode="aspectFit" /><text>我的寄件</text></view>
+      <text class="section-kicker">查看历史运单和当前快件状态</text>
+    </view>
+    <text class="muted small">{{orders.length}} 单</text>
+  </view>
+
+  <view wx:if="{{loading}}" class="card loading-card">
+    <text class="empty-title">正在加载订单</text>
+    <text class="muted">请稍候，系统正在同步最新订单。</text>
+  </view>
+
+  <view wx:elif="{{errorText}}" class="card empty">
+    <text class="empty-title">加载失败</text>
+    <text class="muted">{{errorText}}</text>
+    <button class="primary-btn" bindtap="loadOrders">重新加载</button>
+  </view>
+
+  <view wx:elif="{{orders.length}}">
+    <view class="order-card card" wx:for="{{orders}}" wx:key="id" bindtap="goDetail" data-id="{{item.id}}">
+      <view class="row between">
+        <view class="order-id-wrap"><image src="/assets/ui/list.png" mode="aspectFit" /><text class="order-id">运单号 {{item.waybillNo}}</text></view>
+        <text class="status-pill">{{item.statusText}}</text>
+      </view>
+      <view class="route">
+        <view class="route-row">
+          <image class="route-icon" src="/assets/ui/pickup.png" mode="aspectFit" />
+          <text>{{item.fromAddress}}</text>
+        </view>
+        <view class="route-row">
+          <image class="route-icon" src="/assets/ui/dropoff.png" mode="aspectFit" />
+          <text>{{item.toAddress}}</text>
+        </view>
+      </view>
+      <view class="row between meta">
+        <view class="meta-left"><image src="/assets/ui/document.png" mode="aspectFit" /><text>{{item.serviceType}} · {{item.itemType}} · {{item.weight}}</text></view>
+        <view class="fee-wrap"><image src="/assets/ui/price.png" mode="aspectFit" /><text class="fee">¥{{item.price}}</text></view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:else class="card empty">
+    <text class="empty-title">还没有运单</text>
+    <text class="muted">创建第一单，体验上门取件和全程轨迹。</text>
+    <button class="primary-btn" bindtap="goOrder">立即寄件</button>
+  </view>
+</view>

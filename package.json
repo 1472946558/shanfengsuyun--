@@ -1,0 +1,18 @@
+{
+  "name": "shanfeng-express-miniapp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Native WeChat mini program for the original Shanfeng Express brand.",
+  "scripts": {
+    "icons": "node scripts/generate-brand-icons.mjs",
+    "validate": "node scripts/validate-miniapp.mjs",
+    "export:douyin": "node scripts/export-douyin.mjs",
+    "validate:douyin": "node scripts/validate-douyin.mjs",
+    "server:dev": "node server/src/server.js",
+    "server:smoke": "node scripts/smoke-server.mjs"
+  },
+  "devDependencies": {
+    "lucide-static": "^1.14.0",
+    "sharp": "^0.34.5"
+  }
+}

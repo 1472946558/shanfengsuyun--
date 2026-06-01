@@ -1,0 +1,96 @@
+.detail-hero .hero-title {
+  font-size: 50rpx;
+}
+
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 28rpx;
+  padding: 22rpx 0;
+  border-bottom: 1rpx solid var(--line);
+  font-size: 28rpx;
+  font-weight: 800;
+}
+
+.info-row:last-child {
+  border-bottom: 0;
+}
+
+.info-row .muted {
+  font-weight: 500;
+}
+
+.info-label {
+  display: flex;
+  align-items: center;
+  gap: 10rpx;
+  flex: 0 0 150rpx;
+}
+
+.info-label image {
+  width: 36rpx;
+  height: 36rpx;
+}
+
+.info-label .muted {
+  font-weight: 500;
+}
+
+.fee {
+  color: var(--brand-strong);
+  font-size: 36rpx;
+  font-weight: 900;
+}
+
+.courier-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  margin-bottom: 18rpx;
+}
+
+.courier-title-row image {
+  width: 46rpx;
+  height: 46rpx;
+}
+
+.courier-title {
+  display: block;
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.courier-name,
+.courier-phone {
+  display: block;
+}
+
+.courier-name {
+  font-size: 30rpx;
+  font-weight: 900;
+}
+
+.courier-phone {
+  margin-top: 8rpx;
+  color: var(--muted);
+  font-size: 24rpx;
+}
+
+.small-btn {
+  width: 180rpx;
+  height: 72rpx;
+  font-size: 24rpx;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  gap: 20rpx;
+  text-align: center;
+}
+
+.empty-title {
+  font-size: 34rpx;
+  font-weight: 900;
+}

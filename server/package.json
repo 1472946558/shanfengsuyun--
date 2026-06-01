@@ -1,0 +1,11 @@
+{
+  "name": "shanfeng-express-server",
+  "version": "0.1.0",
+  "private": true,
+  "description": "RESTful API server for Shanfeng Express mini programs.",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js"
+  }
+}
+
